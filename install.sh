@@ -4,7 +4,7 @@
 #move to supper user
 #sudo su
 
-#move to hemo direcotry
+#move to home direcotry
 #cd
 
 #clone repo
