@@ -1,6 +1,4 @@
-#move to supper user
 #sudo su
-
 #cd
 
 #clone repo
@@ -9,6 +7,9 @@
 
 #update the system
 apt-get update -y && apt-get upgrade -y
+
+cp /usr/share/zoneinfo/Etc/GMT-2 /etc/localtime
+
 
 #install music player daemon
 apt-get install mpd -y
@@ -49,21 +50,43 @@ EOF
 #install music player controller
 apt-get install mpc -y
 
-#copy icecast2 configuration 
-cp -a icecast2 /etc
-chmod 775 -R /etc/icecast2
-chmod 660 /etc/icecast2/*
-chmod 664 /etc/icecast2/admin/*
-chmod 775 /etc/icecast2/web/*
+apt-get install samba samba-common-bin -y
+
+cat > /etc/samba/smb.conf << EOF
+#======================= Global Settings =========================
+[global]
+workgroup = WORKGROUP
+security = share
+map to guest = bad user
+#======================= Share Definitions =======================
+[music]
+path = /var/lib/mpd/music
+browsable =yes
+writable = yes
+guest ok = yes
+read only = no
+EOF
+
+#set permissions
+chmod -R 777 /var/lib/mpd/music
+chmod -R g+s /var/lib/mpd/music
+chmod g+w /var/lib/mpd/music /var/lib/mpd/playlists
+chgrp audio /var/lib/mpd/music /var/lib/mpd/playlists
+
+/etc/init.d/samba restart
 
 #icecast is streaming software that puts music into the air
 apt-get install icecast2 -y
 
 #modprobe
 modprobe ipv6
+sleep 1
 
 /etc/init.d/mpd restart
+sleep 1
+
 /etc/init.d/icecast2 restart
+sleep 1
 
 #check output
 mpc outputs
@@ -71,10 +94,6 @@ mpc outputs
 
 #Check if the network is listening
 netstat -ltpn
-
-#set permissions
-chmod g+w /var/lib/mpd/music/ /var/lib/mpd/playlists/
-chgrp audio /var/lib/mpd/music/ /var/lib/mpd/playlists/
 
 #clear playlist
 mpc clear
@@ -85,11 +104,21 @@ mpc update
 #list all songs in /var/lib/mpd/music and add it to playlist
 mpc ls | mpc add
 
+#set shufle on
+mpc random on
+
+#set shufle on
+mpc repeat on
+
 #show playlist
 mpc playlist
 
 #start stream
 mpc play
 
+#retry the service if not running every minute
+echo "* * * * * root mpc play">> /etc/crontab
+echo "00 00 * * * root mpc stop && mpc clear && mpc update && mpc ls | mpc add && mpc random on && mpc repeat on">> /etc/crontab
+/etc/init.d/cron restart
 
 
