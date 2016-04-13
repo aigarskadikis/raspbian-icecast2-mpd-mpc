@@ -1,3 +1,4 @@
+#!/bin/sh
 #this is tested on fresh 2016-03-18-raspbian-jessie-lite.img
 
 #move to supper user
@@ -27,35 +28,36 @@ ipaddress=$(ifconfig | grep "inet.*cast" | sed "s/[: ]/\n/g" | grep -m1 "[0-9]\+
 #set mpd configuration file. you can change 'hackme' password.
 #make sure you type the same password as in icecast configuration
 cat > /etc/mpd.conf << EOF
-music_directory         "/var/lib/mpd/music"
-playlist_directory              "/var/lib/mpd/playlists"
-db_file                 "/var/lib/mpd/tag_cache"
-log_file                        "/var/log/mpd/mpd.log"
-pid_file                        "/run/mpd/pid"
-state_file                      "/var/lib/mpd/state"
-sticker_file                   "/var/lib/mpd/sticker.sql"
-user                            "mpd"
-bind_to_address         "127.0.0.1"
+	music_directory         "/var/lib/mpd/music"
+	playlist_directory      "/var/lib/mpd/playlists"
+	db_file                 "/var/lib/mpd/tag_cache"
+	log_file                "/var/log/mpd/mpd.log"
+	pid_file                "/run/mpd/pid"
+	state_file              "/var/lib/mpd/state"
+	sticker_file            "/var/lib/mpd/sticker.sql"
+	user                    "mpd"
+	bind_to_address         "127.0.0.1"
+
 
 input {
-plugin "curl"
+	plugin "curl"
 }
 
 audio_output {
-type            "shout"
-name            "Algorithm"
-description     "MPD stream on Raspberry Pi"
-host            "$ipaddress"
-port            "8000"
-mount           "/mpd"
-password        "hackme"
-bitrate         "128"
-format          "44100:16:2"
-encoding        "mp3"
+	type                    "shout"
+	name                    "Algorithm"
+	description             "MPD stream on Raspberry Pi"
+	host                    "$ipaddress"
+	port                    "8000"
+	mount                   "/mpd"
+	password                "hackme"
+	bitrate                 "128"
+	format                  "44100:16:2"
+	encoding                "mp3"
 }
 
-filesystem_charset              "UTF-8"
-id3v1_encoding                  "UTF-8"
+	filesystem_charset      "UTF-8"
+	id3v1_encoding          "UTF-8"
 EOF
 
 #install music player controller
