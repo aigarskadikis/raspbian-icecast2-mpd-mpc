@@ -1,6 +1,10 @@
 #move to supper user
 #sudo su
 
+#clone repo
+#git clone https://github.com/catonrug/raspbian-icecast2-mpd-mpc.git && cd raspbian-icecast2-mpd-mpc && chmod +x install.sh
+#time ./install.sh
+
 #update the system
 apt-get update -y && apt-get upgrade -y
 
