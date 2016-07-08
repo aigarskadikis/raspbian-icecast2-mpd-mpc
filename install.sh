@@ -71,7 +71,6 @@ cat > /etc/samba/smb.conf << EOF
 #======================= Global Settings =========================
 [global]
 workgroup = WORKGROUP
-security = share
 map to guest = bad user
 #======================= Share Definitions =======================
 [music]
